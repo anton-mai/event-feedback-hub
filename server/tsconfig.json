@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "rootDirs": ["src"],
+    "outDir": "dist",
+    "lib": ["es2023"],
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "types": ["node"],
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
