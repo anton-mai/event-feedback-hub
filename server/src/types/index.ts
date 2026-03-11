@@ -1,4 +1,16 @@
-import { type TFeedbackItem } from '../../store';
+export type TEventItem = {
+  id: string;
+  name: string;
+};
+
+export type TFeedbackItem = {
+  id: string;
+  eventId: string;
+  content: string;
+  rating: number;
+  createdBy: string;
+  createdAt: string;
+};
 
 export type TGetFeedbackParams = {
   eventId: string;

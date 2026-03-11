@@ -2,8 +2,13 @@ import {
   addFeedbackItem,
   getEventItemById,
   getFeedbackItems,
-  TFeedbackItem,
 } from '../../store';
+import {
+  TCreateFeedbackInput,
+  TFeedbackItem,
+  TFeedbackPage,
+  TGetFeedbackParams,
+} from '../../types';
 import {
   DEFAULT_PAGE_SIZE,
   MAX_FEEDBACK_LENGTH,
@@ -11,11 +16,6 @@ import {
   MAX_RATING,
   MIN_RATING,
 } from './feedbackService.constants';
-import {
-  TCreateFeedbackInput,
-  TFeedbackPage,
-  TGetFeedbackParams,
-} from './feedbackService.types';
 
 export const getFeedback = ({
   eventId,

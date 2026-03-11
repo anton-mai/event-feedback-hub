@@ -1,12 +1,4 @@
-import type { TEventItem, TFeedbackItem } from './store.types';
-
-const eventStore: TEventItem[] = [
-  { id: '1', name: 'React Workshop 2025' },
-  { id: '2', name: 'GraphQL Deep Dive' },
-  { id: '3', name: 'TypeScript Best Practices' },
-  { id: '4', name: 'Node.js Backend Patterns' },
-  { id: '5', name: 'Full-Stack Conference' },
-];
+import type { TFeedbackItem } from '../types';
 
 const feedbackStore: TFeedbackItem[] = [
   {
@@ -27,15 +19,9 @@ const feedbackStore: TFeedbackItem[] = [
   },
 ];
 
-export const getEventItems = (): TEventItem[] => [...eventStore];
-
-export const getEventItemById = (id: string): TEventItem | undefined =>
-  eventStore.find((event) => event.id === id);
-
 export const getFeedbackItems = (): TFeedbackItem[] => [...feedbackStore];
 
 export const addFeedbackItem = (record: TFeedbackItem): TFeedbackItem => {
   feedbackStore.push(record);
-
   return record;
 };
