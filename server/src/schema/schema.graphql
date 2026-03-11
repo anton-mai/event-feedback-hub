@@ -1,0 +1,38 @@
+type Event {
+  id: ID!
+  name: String!
+}
+
+type Feedback {
+  id: ID!
+  event: Event!
+  content: String!
+  rating: Int!
+  createdBy: String!
+  createdAt: String!
+}
+
+type FeedbackPage {
+  items: [Feedback!]!
+  nextCursor: String
+}
+
+type Query {
+  events: [Event!]!
+  feedback(eventId: ID!, rating: Int, cursor: String, limit: Int): FeedbackPage!
+}
+
+input CreateFeedbackInput {
+  eventId: ID!
+  content: String!
+  rating: Int!
+  createdBy: String!
+}
+
+type Mutation {
+  createFeedback(input: CreateFeedbackInput!): Feedback!
+}
+
+type Subscription {
+  feedbackCreated(eventId: ID!): Feedback!
+}
