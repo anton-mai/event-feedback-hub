@@ -6,6 +6,7 @@ import {
   TFeedbackItem,
   TGetFeedbackParams,
 } from '../types';
+import { createNotFoundError } from '../utils/errors';
 
 const feedbackQueryResolvers = {
   feedback: (_: unknown, args: TGetFeedbackParams) => getFeedback(args),
@@ -30,7 +31,7 @@ const feedbackTypeResolvers = {
     const event = getEventItemById(parent.eventId);
 
     if (!event) {
-      throw new Error(`Event with id "${parent.eventId}" not found.`);
+      throw createNotFoundError(`Event with id "${parent.eventId}" not found.`);
     }
 
     return event;

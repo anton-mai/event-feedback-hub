@@ -10,6 +10,7 @@ import {
   TFeedbackPage,
   TGetFeedbackParams,
 } from '../../types';
+import { createNotFoundError, createValidationError } from '../../utils/errors';
 import {
   DEFAULT_PAGE_SIZE,
   MAX_FEEDBACK_LENGTH,
@@ -27,7 +28,7 @@ export const getFeedback = ({
   const event = getEventItemById(eventId);
 
   if (!event) {
-    throw new Error(`Event with id "${eventId}" not found.`);
+    throw createNotFoundError(`Event with id "${eventId}" not found.`);
   }
 
   const feedbackItemsForEvent = getFeedbackItems()
@@ -70,17 +71,17 @@ export const createFeedback = ({
   const event = getEventItemById(eventId);
 
   if (!event) {
-    throw new Error(`Event with id "${eventId}" not found.`);
+    throw createNotFoundError(`Event with id "${eventId}" not found.`);
   }
 
   const trimmedContent = content.trim();
 
   if (!trimmedContent) {
-    throw new Error('Feedback content must not be empty.');
+    throw createValidationError('Feedback content must not be empty.');
   }
 
   if (trimmedContent.length > MAX_FEEDBACK_LENGTH) {
-    throw new Error(
+    throw createValidationError(
       `Feedback content must be no more than ${String(
         MAX_FEEDBACK_LENGTH,
       )} characters long.`,
@@ -88,7 +89,7 @@ export const createFeedback = ({
   }
 
   if (!Number.isInteger(rating) || rating < MIN_RATING || rating > MAX_RATING) {
-    throw new Error(
+    throw createValidationError(
       `Rating must be an integer between ${String(
         MIN_RATING,
       )} and ${String(MAX_RATING)}.`,
@@ -98,7 +99,7 @@ export const createFeedback = ({
   const author = createdBy.trim();
 
   if (!author) {
-    throw new Error('Author name must not be empty.');
+    throw createValidationError('Author name must not be empty.');
   }
 
   const feedbackItem: TFeedbackItem = {
