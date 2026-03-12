@@ -1,12 +1,12 @@
-import { getFeedbackCreatedChannel, pubsub } from '../pubsub';
-import { createFeedback, getFeedback } from '../services';
-import { getEventItemById } from '../store';
+import { getFeedbackCreatedChannel, pubsub } from '../pubsub.js';
+import { createFeedback, getFeedback } from '../services/index.js';
+import { getEventItemById } from '../store/eventStore.js';
 import {
   TCreateFeedbackInput,
   TFeedbackItem,
   TGetFeedbackParams,
-} from '../types';
-import { createNotFoundError } from '../utils/errors';
+} from '../types/index.js';
+import { createNotFoundError } from '../utils/errors.js';
 
 const feedbackQueryResolvers = {
   feedback: (_: unknown, args: TGetFeedbackParams) => getFeedback(args),

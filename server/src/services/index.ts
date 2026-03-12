@@ -1,2 +1,2 @@
-export * from './eventService';
-export * from './feedbackService';
+export * from './eventService/eventService.js';
+export * from './feedbackService/feedbackService.js';

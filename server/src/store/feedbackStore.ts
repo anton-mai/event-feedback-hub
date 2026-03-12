@@ -1,4 +1,4 @@
-import type { TFeedbackItem } from '../types';
+import type { TFeedbackItem } from '../types/index.js';
 
 const feedbackStore: TFeedbackItem[] = [
   {

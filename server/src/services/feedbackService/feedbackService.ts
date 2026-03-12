@@ -1,23 +1,26 @@
-import { getFeedbackCreatedChannel, pubsub } from '../../pubsub';
+import { getFeedbackCreatedChannel, pubsub } from '../../pubsub.js';
+import { getEventItemById } from '../../store/eventStore.js';
 import {
   addFeedbackItem,
-  getEventItemById,
   getFeedbackItems,
-} from '../../store';
+} from '../../store/feedbackStore.js';
 import {
   TCreateFeedbackInput,
   TFeedbackItem,
   TFeedbackPage,
   TGetFeedbackParams,
-} from '../../types';
-import { createNotFoundError, createValidationError } from '../../utils/errors';
+} from '../../types/index.js';
+import {
+  createNotFoundError,
+  createValidationError,
+} from '../../utils/errors.js';
 import {
   DEFAULT_PAGE_SIZE,
   MAX_FEEDBACK_LENGTH,
   MAX_PAGE_SIZE,
   MAX_RATING,
   MIN_RATING,
-} from './feedbackService.constants';
+} from './feedbackService.constants.js';
 
 export const getFeedback = ({
   eventId,

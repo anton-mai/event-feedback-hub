@@ -1,4 +1,4 @@
-import type { TEventItem } from '../types';
+import type { TEventItem } from '../types/index.js';
 
 const eventStore: TEventItem[] = [
   { id: '1', name: 'React Workshop 2025' },
