@@ -1,3 +1,4 @@
+import { getFeedbackCreatedChannel, pubsub } from '../pubsub';
 import { createFeedback, getFeedback } from '../services';
 import { getEventItemById } from '../store';
 import {
@@ -11,8 +12,17 @@ const feedbackQueryResolvers = {
 };
 
 const feedbackMutationResolvers = {
-  createFeedback: (_: unknown, args: { input: TCreateFeedbackInput }) =>
-    createFeedback(args.input),
+  createFeedback: (_: unknown, { input }: { input: TCreateFeedbackInput }) =>
+    createFeedback(input),
+};
+
+const feedbackSubscriptionResolvers = {
+  feedbackCreated: {
+    subscribe: (_: unknown, { eventId }: { eventId: string }) =>
+      pubsub.asyncIterableIterator<{ feedbackCreated: TFeedbackItem }>([
+        getFeedbackCreatedChannel(eventId),
+      ]),
+  },
 };
 
 const feedbackTypeResolvers = {
@@ -30,5 +40,6 @@ const feedbackTypeResolvers = {
 export const feedbackResolvers = {
   Query: feedbackQueryResolvers,
   Mutation: feedbackMutationResolvers,
+  Subscription: feedbackSubscriptionResolvers,
   Feedback: feedbackTypeResolvers,
 };

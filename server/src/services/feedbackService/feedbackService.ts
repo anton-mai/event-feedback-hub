@@ -1,3 +1,4 @@
+import { getFeedbackCreatedChannel, pubsub } from '../../pubsub';
 import {
   addFeedbackItem,
   getEventItemById,
@@ -109,5 +110,11 @@ export const createFeedback = ({
     createdAt: new Date().toISOString(),
   };
 
-  return addFeedbackItem(feedbackItem);
+  const created = addFeedbackItem(feedbackItem);
+
+  void pubsub.publish(getFeedbackCreatedChannel(eventId), {
+    feedbackCreated: created,
+  });
+
+  return created;
 };
