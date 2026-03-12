@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { FeedbackForm } from './features';
+import { FeedbackForm, FeedbackStream } from './features';
 
 function App() {
   return (
@@ -17,10 +17,8 @@ function App() {
       </AppBar>
       <Container component="main" sx={{ py: 3 }}>
         <Stack spacing={4}>
-          {/* Section: Feedback submission form — Step 5.2 */}
           <FeedbackForm />
-          {/* Section: Feedback stream — Step 5.3 */}
-          <section aria-label="Feedback stream" />
+          <FeedbackStream />
         </Stack>
       </Container>
     </>
