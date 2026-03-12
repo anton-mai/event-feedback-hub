@@ -4,7 +4,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import cors from 'cors';
 import express from 'express';
 import fs from 'fs';
-import { useServer } from 'graphql-ws/lib/use/ws';
+import { useServer } from 'graphql-ws/use/ws';
 import { createServer } from 'http';
 import path from 'path';
 import { WebSocketServer } from 'ws';
