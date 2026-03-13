@@ -17,7 +17,7 @@ type TGetEventsQueryResult = DocumentType<typeof eventsDocumentNode>;
 export type TUseEventsResult = {
   events: TGetEventsQueryResult['events'] | undefined;
   loading: boolean;
-  error: ErrorLike | undefined; 
+  error: ErrorLike | undefined;
 };
 
 export const useEvents = (): TUseEventsResult => {

@@ -20,10 +20,14 @@ const createFeedbackDocumentNode = graphql(`
   }
 `);
 
-type TCreateFeedbackMutationResult = DocumentType<typeof createFeedbackDocumentNode>;
+type TCreateFeedbackMutationResult = DocumentType<
+  typeof createFeedbackDocumentNode
+>;
 
 export type TUseSubmitFeedbackResult = {
-  submit: (input: CreateFeedbackInput) => Promise<TCreateFeedbackMutationResult | null>;
+  submit: (
+    input: CreateFeedbackInput,
+  ) => Promise<TCreateFeedbackMutationResult | null>;
   loading: boolean;
   error: ErrorLike | undefined;
 };
@@ -45,4 +49,3 @@ export const useSubmitFeedback = (): TUseSubmitFeedbackResult => {
     error,
   };
 };
-
