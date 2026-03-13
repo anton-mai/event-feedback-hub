@@ -81,16 +81,6 @@ export const FeedbackForm = () => {
             required
           />
 
-          <TextField
-            required
-            label="Your name"
-            value={displayName}
-            onChange={(event) => {
-              setDisplayName(event.target.value);
-            }}
-            fullWidth
-          />
-
           <Stack direction="row" alignItems="center" gap={1}>
             <Typography component="span" variant="body2">
               How did you like the event? *
@@ -101,6 +91,16 @@ export const FeedbackForm = () => {
               onChange={setRating}
             />
           </Stack>
+
+          <TextField
+            required
+            label="Your name"
+            value={displayName}
+            onChange={(event) => {
+              setDisplayName(event.target.value);
+            }}
+            fullWidth
+          />
 
           <TextField
             required

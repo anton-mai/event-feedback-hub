@@ -8,41 +8,60 @@ import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ALL_EVENTS_VALUE } from '../../../events/components/EventsSelect';
 import { useFeedback } from '../../hooks/useFeedback';
 import { FeedbackStreamFilters } from '../FeedbackStreamFilters';
+import { ALL_RATINGS_VALUE } from '../FeedbackStreamFilters/FeedbackStreamFilters.constants';
 import { FeedbackStreamItem } from '../FeedbackStreamItem';
 import { DEFAULT_PAGE_SIZE } from './FeedbackStream.constants';
 import { getFeedbackStreamEmptyMessage } from './FeedbackStream.utils';
 
-type TRatingFilter = 'all' | 1 | 2 | 3 | 4 | 5;
+type TRatingFilter = typeof ALL_RATINGS_VALUE | 1 | 2 | 3 | 4 | 5;
 
 export const FeedbackStream = () => {
   const [eventId, setEventId] = useState(ALL_EVENTS_VALUE);
-  const [ratingFilter, setRatingFilter] = useState<TRatingFilter>('all');
+  const [rating, setRating] = useState<TRatingFilter>(ALL_RATINGS_VALUE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const [isErrorDismissed, setIsErrorDismissed] = useState(false);
 
-  const numericRatingFilter = ratingFilter === 'all' ? null : ratingFilter;
+  const numericRating = rating === ALL_RATINGS_VALUE ? null : rating;
 
   const { items, nextCursor, loading, error, loadMore, refetch } = useFeedback({
     eventId,
-    rating: numericRatingFilter,
+    rating: numericRating,
     limit: DEFAULT_PAGE_SIZE,
   });
+
+  const prevEventIdRef = useRef(eventId);
+  const prevRatingRef = useRef(rating);
+
+  useEffect(() => {
+    const eventChanged = prevEventIdRef.current !== eventId;
+    const switchedToAllRatings =
+      prevRatingRef.current !== ALL_RATINGS_VALUE &&
+      rating === ALL_RATINGS_VALUE;
+
+    prevEventIdRef.current = eventId;
+    prevRatingRef.current = rating;
+
+    if (eventChanged || switchedToAllRatings) {
+      console.log('refetching feedback');
+      void refetch();
+    }
+  }, [eventId, rating, refetch]);
 
   const handleRatingFilterChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
 
-    if (value === 'all') {
-      setRatingFilter('all');
+    if (value === ALL_RATINGS_VALUE) {
+      setRating(ALL_RATINGS_VALUE);
       return;
     }
 
     const parsedValue = Number.parseInt(value, 10) as TRatingFilter;
-    setRatingFilter(parsedValue);
+    setRating(parsedValue);
   };
 
   const handleLoadMore = async () => {
@@ -81,7 +100,7 @@ export const FeedbackStream = () => {
         <FeedbackStreamFilters
           eventId={eventId}
           onEventIdChange={setEventId}
-          ratingFilterValue={String(ratingFilter)}
+          ratingFilterValue={String(rating)}
           onRatingFilterChange={handleRatingFilterChange}
         />
 
@@ -140,7 +159,7 @@ export const FeedbackStream = () => {
 
         {!loading && !error && !hasItems && (
           <Typography color="text.secondary">
-            {getFeedbackStreamEmptyMessage(isAllEvents, numericRatingFilter)}
+            {getFeedbackStreamEmptyMessage(isAllEvents, numericRating)}
           </Typography>
         )}
 
