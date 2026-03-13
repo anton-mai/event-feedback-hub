@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -6,7 +7,6 @@ import MenuItem from '@mui/material/MenuItem';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useEvents } from '../hooks/useEvents';
 
@@ -39,19 +39,23 @@ export const EventsSelect = ({
 
   if (error) {
     return (
-      <Stack spacing={1} direction="row" alignItems="center">
-        <Typography color="error">{error.message}</Typography>
-        <Box>
+      <Alert
+        severity="error"
+        action={
           <Button
             type="button"
-            variant="outlined"
+            color="inherit"
             size="small"
-            onClick={() => void refetch()}
+            onClick={() => {
+              void refetch();
+            }}
           >
             Retry
           </Button>
-        </Box>
-      </Stack>
+        }
+      >
+        {error.message}
+      </Alert>
     );
   }
 

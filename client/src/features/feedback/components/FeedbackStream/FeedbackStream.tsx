@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
@@ -121,7 +122,7 @@ export const FeedbackStream = () => {
         )}
 
         {hasSelectedEvent && loading && !hasItems && (
-          <Stack spacing={1}>
+          <Stack spacing={1.5}>
             {Array.from({ length: DEFAULT_PAGE_SIZE }, (_, i) => (
               <Skeleton
                 key={`feedback-skeleton-${String(i)}`}
@@ -132,7 +133,14 @@ export const FeedbackStream = () => {
           </Stack>
         )}
 
-        {hasSelectedEvent && hasError && (
+        <Snackbar
+          open={hasSelectedEvent && hasError}
+          autoHideDuration={4000}
+          onClose={() => {
+            setIsErrorDismissed(true);
+          }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
           <Alert
             severity="error"
             action={
@@ -159,10 +167,12 @@ export const FeedbackStream = () => {
                 </IconButton>
               </>
             }
+            variant="filled"
+            sx={{ width: '100%' }}
           >
             {errorMessage}
           </Alert>
-        )}
+        </Snackbar>
 
         {hasSelectedEvent && !loading && !error && !hasItems && (
           <Typography color="text.secondary">
@@ -175,7 +185,7 @@ export const FeedbackStream = () => {
         )}
 
         {hasSelectedEvent && hasItems && (
-          <Stack spacing={2}>
+          <Stack spacing={1.5}>
             {items.map((feedback) => (
               <FeedbackStreamItem key={feedback.id} feedback={feedback} />
             ))}

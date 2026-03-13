@@ -1,6 +1,7 @@
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -120,22 +121,48 @@ export const FeedbackForm = () => {
             helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
           />
 
-          {hasError && (
+          <Snackbar
+            open={hasError}
+            autoHideDuration={4000}
+            onClose={() => {
+              setIsErrorDismissed(true);
+            }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
             <Alert
               severity="error"
               onClose={() => {
                 setIsErrorDismissed(true);
               }}
+              variant="filled"
+              sx={{ width: '100%' }}
             >
               {errorMessage}
             </Alert>
-          )}
+          </Snackbar>
 
-          {submitSuccess && (
-            <Typography color="primary">
+          <Snackbar
+            open={submitSuccess}
+            autoHideDuration={4000}
+            onClose={(_event, reason) => {
+              if (reason === 'clickaway') {
+                return;
+              }
+              setSubmitSuccess(false);
+            }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSubmitSuccess(false);
+              }}
+              variant="filled"
+              sx={{ width: '100%' }}
+            >
               Thank you! Your feedback has been submitted.
-            </Typography>
-          )}
+            </Alert>
+          </Snackbar>
 
           <Box display="flex" justifyContent="flex-end">
             <Button
