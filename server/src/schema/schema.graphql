@@ -19,7 +19,7 @@ type FeedbackPage {
 
 type Query {
   events: [Event!]!
-  feedback(eventId: ID!, rating: Int, cursor: String, limit: Int): FeedbackPage!
+  feedback(eventId: ID, rating: Int, cursor: String, limit: Int): FeedbackPage!
 }
 
 input CreateFeedbackInput {
@@ -34,5 +34,5 @@ type Mutation {
 }
 
 type Subscription {
-  feedbackCreated(eventId: ID!): Feedback!
+  feedbackCreated(eventId: ID): Feedback!
 }

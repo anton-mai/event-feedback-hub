@@ -19,7 +19,7 @@ const feedbackMutationResolvers = {
 
 const feedbackSubscriptionResolvers = {
   feedbackCreated: {
-    subscribe: (_: unknown, { eventId }: { eventId: string }) =>
+    subscribe: (_: unknown, { eventId }: { eventId?: string | null }) =>
       pubsub.asyncIterableIterator<{ feedbackCreated: TFeedbackItem }>([
         getFeedbackCreatedChannel(eventId),
       ]),

@@ -21,6 +21,7 @@ import {
   MAX_RATING,
   MIN_RATING,
 } from './feedbackService.constants.js';
+import { getFilteredFeedbackItems } from './feedbackService.utils.js';
 
 export const getFeedback = ({
   eventId,
@@ -28,24 +29,14 @@ export const getFeedback = ({
   cursor,
   limit,
 }: TGetFeedbackParams): TFeedbackPage => {
-  const event = getEventItemById(eventId);
+  const allFeedbackItems = getFeedbackItems().sort((a, b) =>
+    b.createdAt.localeCompare(a.createdAt),
+  );
 
-  if (!event) {
-    throw createNotFoundError(`Event with id "${eventId}" not found.`);
-  }
-
-  const feedbackItemsForEvent = getFeedbackItems()
-    .filter((feedback) => feedback.eventId === eventId)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-
-  const feedbackItemsFilteredByRating =
-    typeof rating === 'number'
-      ? feedbackItemsForEvent.filter((item) => item.rating === rating)
-      : feedbackItemsForEvent;
-
-  const feedbackItemsAfterCursor = cursor
-    ? feedbackItemsFilteredByRating.filter((item) => item.createdAt < cursor)
-    : feedbackItemsFilteredByRating;
+  const feedbackItemsAfterFilters = getFilteredFeedbackItems(
+    allFeedbackItems,
+    { eventId, rating, cursor },
+  );
 
   const pageSize =
     typeof limit === 'number'
@@ -53,9 +44,9 @@ export const getFeedback = ({
       : DEFAULT_PAGE_SIZE;
 
   const hasNextPage =
-    feedbackItemsAfterCursor.slice(0, pageSize + 1).length > pageSize;
+    feedbackItemsAfterFilters.slice(0, pageSize + 1).length > pageSize;
 
-  const items = feedbackItemsAfterCursor.slice(0, pageSize);
+  const items = feedbackItemsAfterFilters.slice(0, pageSize);
 
   const nextCursor = hasNextPage ? items[items.length - 1].createdAt : null;
 
@@ -117,6 +108,10 @@ export const createFeedback = ({
   const created = addFeedbackItem(feedbackItem);
 
   void pubsub.publish(getFeedbackCreatedChannel(eventId), {
+    feedbackCreated: created,
+  });
+
+  void pubsub.publish(getFeedbackCreatedChannel(null), {
     feedbackCreated: created,
   });
 

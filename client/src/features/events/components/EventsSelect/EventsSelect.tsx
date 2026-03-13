@@ -8,13 +8,15 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import { useEvents } from '../hooks/useEvents';
+import { useEvents } from '../../hooks/useEvents';
+import { ALL_EVENTS_VALUE } from './EventsSelect.constants';
 
 export type TEventsSelectProps = {
   label?: string;
   value: string;
   onChange: (eventId: string) => void;
   required?: boolean;
+  includeAllEvents?: boolean;
 };
 
 export const EventsSelect = ({
@@ -22,6 +24,7 @@ export const EventsSelect = ({
   value,
   onChange,
   required = false,
+  includeAllEvents = false,
 }: TEventsSelectProps) => {
   const { events, loading, error, refetch } = useEvents();
 
@@ -72,6 +75,9 @@ export const EventsSelect = ({
         label={label}
         onChange={handleChange}
       >
+        {includeAllEvents && (
+          <MenuItem value={ALL_EVENTS_VALUE}>All events</MenuItem>
+        )}
         {events.map((event) => (
           <MenuItem key={event.id} value={event.id}>
             {event.name}

@@ -13,7 +13,10 @@ import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
-import { EventsSelect } from '../../../events/components/EventsSelect';
+import {
+  ALL_EVENTS_VALUE,
+  EventsSelect,
+} from '../../../events/components/EventsSelect';
 import { useFeedback } from '../../hooks/useFeedback';
 import { FeedbackStreamItem } from '../FeedbackStreamItem';
 import { DEFAULT_PAGE_SIZE } from './FeedbackStream.constants';
@@ -21,7 +24,7 @@ import { DEFAULT_PAGE_SIZE } from './FeedbackStream.constants';
 type TRatingFilter = 'all' | 1 | 2 | 3 | 4 | 5;
 
 export const FeedbackStream = () => {
-  const [eventId, setEventId] = useState('');
+  const [eventId, setEventId] = useState(ALL_EVENTS_VALUE);
   const [ratingFilter, setRatingFilter] = useState<TRatingFilter>('all');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
@@ -68,7 +71,7 @@ export const FeedbackStream = () => {
     }
   };
 
-  const hasSelectedEvent = Boolean(eventId);
+  const isAllEvents = eventId === ALL_EVENTS_VALUE;
   const hasItems = items.length > 0;
   const hasError = Boolean(error || loadMoreError) && !isErrorDismissed;
   const errorMessage =
@@ -76,9 +79,7 @@ export const FeedbackStream = () => {
     loadMoreError ??
     'Failed to load feedback. Please try again.';
 
-  const headerTitle = hasSelectedEvent
-    ? `Live feedback stream (${String(items.length)})`
-    : 'Live feedback stream';
+  const headerTitle = 'Live feedback stream';
 
   return (
     <Stack component="section" aria-label="Feedback stream" gap={1}>
@@ -94,7 +95,12 @@ export const FeedbackStream = () => {
           aria-label="Feedback filters"
         >
           <Box flex={1}>
-            <EventsSelect label="Event" value={eventId} onChange={setEventId} />
+            <EventsSelect
+              label="Event"
+              value={eventId}
+              onChange={setEventId}
+              includeAllEvents
+            />
           </Box>
 
           <FormControl sx={{ minWidth: 160 }}>
@@ -115,13 +121,7 @@ export const FeedbackStream = () => {
           </FormControl>
         </Stack>
 
-        {!hasSelectedEvent && (
-          <Typography color="text.secondary">
-            Select an event to see what others are saying in real time.
-          </Typography>
-        )}
-
-        {hasSelectedEvent && loading && !hasItems && (
+        {loading && !hasItems && (
           <Stack spacing={1.5}>
             {Array.from({ length: DEFAULT_PAGE_SIZE }, (_, i) => (
               <Skeleton
@@ -134,7 +134,7 @@ export const FeedbackStream = () => {
         )}
 
         <Snackbar
-          open={hasSelectedEvent && hasError}
+          open={hasError}
           autoHideDuration={4000}
           onClose={() => {
             setIsErrorDismissed(true);
@@ -174,9 +174,10 @@ export const FeedbackStream = () => {
           </Alert>
         </Snackbar>
 
-        {hasSelectedEvent && !loading && !error && !hasItems && (
+        {!loading && !error && !hasItems && (
           <Typography color="text.secondary">
-            No feedback yet for this event
+            No feedback yet
+            {isAllEvents ? '' : ' for this event'}
             {numericRatingFilter
               ? ` with a rating of ${String(numericRatingFilter)}`
               : ''}{' '}
@@ -184,7 +185,7 @@ export const FeedbackStream = () => {
           </Typography>
         )}
 
-        {hasSelectedEvent && hasItems && (
+        {hasItems && (
           <Stack spacing={1.5}>
             {items.map((feedback) => (
               <FeedbackStreamItem key={feedback.id} feedback={feedback} />
@@ -192,7 +193,7 @@ export const FeedbackStream = () => {
           </Stack>
         )}
 
-        {hasSelectedEvent && nextCursor && (
+        {nextCursor && (
           <Box display="flex" justifyContent="center" mt={1}>
             <Button
               type="button"

@@ -13,7 +13,7 @@ export type TFeedbackItem = {
 };
 
 export type TGetFeedbackParams = {
-  eventId: string;
+  eventId?: string | null;
   rating?: number | null;
   cursor?: string | null;
   limit?: number | null;

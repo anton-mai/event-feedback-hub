@@ -1,11 +1,12 @@
 import type { ErrorLike } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { useEffect } from 'react';
+import { ALL_EVENTS_VALUE } from '../../../constants/events';
 import type { DocumentType } from '../../../generated/gql';
 import { graphql } from '../../../generated/gql';
 
 const feedbackDocumentNode = graphql(`
-  query GetFeedback($eventId: ID!, $rating: Int, $cursor: String, $limit: Int) {
+  query GetFeedback($eventId: ID, $rating: Int, $cursor: String, $limit: Int) {
     feedback(
       eventId: $eventId
       rating: $rating
@@ -29,7 +30,7 @@ const feedbackDocumentNode = graphql(`
 `);
 
 const feedbackCreatedDocumentNode = graphql(`
-  subscription FeedbackCreated($eventId: ID!) {
+  subscription FeedbackCreated($eventId: ID) {
     feedbackCreated(eventId: $eventId) {
       id
       content
@@ -66,28 +67,27 @@ export const useFeedback = ({
   rating,
   limit = 10,
 }: TUseFeedbackArgs): TUseFeedbackResult => {
-  const shouldSkipQuery = !eventId;
+  const isAllEvents = eventId === ALL_EVENTS_VALUE;
 
   const { data, loading, error, fetchMore, refetch, subscribeToMore } =
     useQuery(feedbackDocumentNode, {
       variables: {
-        eventId,
+        eventId: isAllEvents ? null : eventId,
         rating: rating ?? undefined,
         cursor: undefined,
         limit,
       },
-      skip: shouldSkipQuery,
       notifyOnNetworkStatusChange: true,
     });
 
   useEffect(() => {
-    if (shouldSkipQuery || !data?.feedback) {
+    if (!data?.feedback) {
       return;
     }
 
     const unsubscribe = subscribeToMore({
       document: feedbackCreatedDocumentNode,
-      variables: { eventId },
+      variables: { eventId: isAllEvents ? null : eventId },
       updateQuery: (
         _unsafePrev,
         { subscriptionData, previousData, complete },
@@ -125,16 +125,16 @@ export const useFeedback = ({
     return () => {
       unsubscribe();
     };
-  }, [eventId, rating, shouldSkipQuery, data?.feedback, subscribeToMore]);
+  }, [eventId, isAllEvents, rating, data?.feedback, subscribeToMore]);
 
   const loadMore = async () => {
-    if (!data?.feedback.nextCursor || shouldSkipQuery) {
+    if (!data?.feedback.nextCursor) {
       return;
     }
 
     await fetchMore({
       variables: {
-        eventId,
+        eventId: isAllEvents ? null : eventId,
         rating: rating ?? undefined,
         cursor: data.feedback.nextCursor,
         limit,
