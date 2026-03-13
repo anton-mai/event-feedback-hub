@@ -5,10 +5,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { Rating } from '../../../../shared/components/Rating';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import { Rating } from '../../../../shared/components/Rating';
 import { EventsSelect } from '../../../events/components/EventsSelect';
 import { useSubmitFeedback } from '../../hooks/useSubmitFeedback';
 import { MAX_FEEDBACK_LENGTH } from './FeedbackForm.constants';
@@ -73,7 +73,7 @@ export const FeedbackForm = () => {
       <CardHeader title="Share your feedback" />
       <CardContent>
         <Box component="form" onSubmit={(event) => void handleSubmit(event)}>
-          <Stack spacing={2}>
+          <Stack spacing={1.5}>
             <EventsSelect label="Event" value={eventId} onChange={setEventId} />
 
             <TextField
@@ -99,21 +99,23 @@ export const FeedbackForm = () => {
               }}
               fullWidth
               multiline
-              minRows={3}
+              minRows={2}
               slotProps={{
                 htmlInput: { maxLength: MAX_FEEDBACK_LENGTH },
               }}
               helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
             />
 
-            <Box>
-              <Typography component="legend">Rating *</Typography>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <Typography component="span" variant="body2">
+                Rating *
+              </Typography>
               <Rating
                 name="feedback-rating"
                 value={rating}
                 onChange={setRating}
               />
-            </Box>
+            </Stack>
 
             {hasError && (
               <Alert
