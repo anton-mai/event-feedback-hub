@@ -1,9 +1,6 @@
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -69,90 +66,90 @@ export const FeedbackForm = () => {
     'Failed to submit feedback. Please try again.';
 
   return (
-    <Card component="section" aria-label="Submit feedback form">
-      <CardHeader title="Share your feedback" />
-      <CardContent>
-        <Box component="form" onSubmit={(event) => void handleSubmit(event)}>
-          <Stack spacing={1.5}>
-            <EventsSelect
-              label="Event"
-              value={eventId}
-              onChange={setEventId}
-              required
+    <Stack component="section" aria-label="Submit feedback form" gap={1}>
+      <Typography variant="h6" component="h2" gutterBottom>
+        Share your feedback
+      </Typography>
+      <Box component="form" onSubmit={(event) => void handleSubmit(event)}>
+        <Stack spacing={1.5}>
+          <EventsSelect
+            label="Event"
+            value={eventId}
+            onChange={setEventId}
+            required
+          />
+
+          <TextField
+            required
+            label="Your name"
+            value={displayName}
+            onChange={(event) => {
+              setDisplayName(event.target.value);
+            }}
+            fullWidth
+          />
+
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography component="span" variant="body2">
+              How did you like the event? *
+            </Typography>
+            <Rating
+              name="feedback-rating"
+              value={rating}
+              onChange={setRating}
             />
-
-            <TextField
-              required
-              label="Your name"
-              value={displayName}
-              onChange={(event) => {
-                setDisplayName(event.target.value);
-              }}
-              fullWidth
-            />
-
-            <TextField
-              required
-              label="Your feedback"
-              value={feedbackText}
-              onChange={(event) => {
-                const { value } = event.target;
-
-                if (value.length <= MAX_FEEDBACK_LENGTH) {
-                  setFeedbackText(value);
-                }
-              }}
-              fullWidth
-              multiline
-              minRows={2}
-              slotProps={{
-                htmlInput: { maxLength: MAX_FEEDBACK_LENGTH },
-              }}
-              helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
-            />
-
-            <Stack direction="row" alignItems="center" gap={1}>
-              <Typography component="span" variant="body2">
-                Rating *
-              </Typography>
-              <Rating
-                name="feedback-rating"
-                value={rating}
-                onChange={setRating}
-              />
-            </Stack>
-
-            {hasError && (
-              <Alert
-                severity="error"
-                onClose={() => {
-                  setIsErrorDismissed(true);
-                }}
-              >
-                {errorMessage}
-              </Alert>
-            )}
-
-            {submitSuccess && (
-              <Typography color="primary">
-                Thank you! Your feedback has been submitted.
-              </Typography>
-            )}
-
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={isFormInvalid}
-                loading={loading}
-              >
-                {loading ? 'Submitting...' : 'Submit feedback'}
-              </Button>
-            </Box>
           </Stack>
-        </Box>
-      </CardContent>
-    </Card>
+
+          <TextField
+            required
+            label="Your feedback"
+            value={feedbackText}
+            onChange={(event) => {
+              const { value } = event.target;
+
+              if (value.length <= MAX_FEEDBACK_LENGTH) {
+                setFeedbackText(value);
+              }
+            }}
+            fullWidth
+            multiline
+            minRows={2}
+            slotProps={{
+              htmlInput: { maxLength: MAX_FEEDBACK_LENGTH },
+            }}
+            helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
+          />
+
+          {hasError && (
+            <Alert
+              severity="error"
+              onClose={() => {
+                setIsErrorDismissed(true);
+              }}
+            >
+              {errorMessage}
+            </Alert>
+          )}
+
+          {submitSuccess && (
+            <Typography color="primary">
+              Thank you! Your feedback has been submitted.
+            </Typography>
+          )}
+
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isFormInvalid}
+              loading={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit feedback'}
+            </Button>
+          </Box>
+        </Stack>
+      </Box>
+    </Stack>
   );
 };

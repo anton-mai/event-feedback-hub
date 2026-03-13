@@ -16,4 +16,14 @@ export const theme = createTheme({
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+        },
+      },
+    },
+  },
 });

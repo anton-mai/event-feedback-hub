@@ -18,7 +18,11 @@ function App() {
         </Toolbar>
       </AppBar>
       <Container component="main" sx={styles.main} maxWidth="xl">
-        <Grid container spacing={4} alignItems="flex-start">
+        <Grid
+          container
+          spacing={{ xs: 2, md: 4, xl: 6 }}
+          alignItems="flex-start"
+        >
           <Grid size={{ xs: 12, md: 4 }}>
             <FeedbackForm />
           </Grid>

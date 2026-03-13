@@ -2,9 +2,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -83,127 +80,123 @@ export const FeedbackStream = () => {
     : 'Live feedback stream';
 
   return (
-    <Card component="section" aria-label="Feedback stream">
-      <CardHeader title={headerTitle} />
-      <CardContent>
-        <Stack spacing={2}>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={{ sm: 'center' }}
-            component="section"
-            aria-label="Feedback filters"
-          >
-            <Box flex={1}>
-              <EventsSelect
-                label="Event"
-                value={eventId}
-                onChange={setEventId}
-              />
-            </Box>
+    <Stack component="section" aria-label="Feedback stream" gap={1}>
+      <Typography variant="h6" component="h2" gutterBottom>
+        {headerTitle}
+      </Typography>
+      <Stack spacing={1.5}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          alignItems={{ sm: 'center' }}
+          component="section"
+          aria-label="Feedback filters"
+        >
+          <Box flex={1}>
+            <EventsSelect label="Event" value={eventId} onChange={setEventId} />
+          </Box>
 
-            <FormControl sx={{ minWidth: 160 }}>
-              <InputLabel id="rating-filter-label">Rating</InputLabel>
-              <Select
-                labelId="rating-filter-label"
-                label="Rating"
-                value={String(ratingFilter)}
-                onChange={handleRatingFilterChange}
-              >
-                <MenuItem value="all">All ratings</MenuItem>
-                <MenuItem value="5">5 stars</MenuItem>
-                <MenuItem value="4">4 stars</MenuItem>
-                <MenuItem value="3">3 stars</MenuItem>
-                <MenuItem value="2">2 stars</MenuItem>
-                <MenuItem value="1">1 star</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-
-          {!hasSelectedEvent && (
-            <Typography color="text.secondary">
-              Select an event to see what others are saying in real time.
-            </Typography>
-          )}
-
-          {hasSelectedEvent && loading && !hasItems && (
-            <Stack spacing={1}>
-              {Array.from({ length: DEFAULT_PAGE_SIZE }, (_, i) => (
-                <Skeleton
-                  key={`feedback-skeleton-${String(i)}`}
-                  variant="rounded"
-                  height={80}
-                />
-              ))}
-            </Stack>
-          )}
-
-          {hasSelectedEvent && hasError && (
-            <Alert
-              severity="error"
-              action={
-                <>
-                  <Button
-                    type="button"
-                    color="inherit"
-                    size="small"
-                    onClick={() => {
-                      void refetch();
-                    }}
-                  >
-                    Retry
-                  </Button>
-                  <IconButton
-                    size="small"
-                    aria-label="Dismiss error"
-                    color="inherit"
-                    onClick={() => {
-                      setIsErrorDismissed(true);
-                    }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </>
-              }
+          <FormControl sx={{ minWidth: 160 }}>
+            <InputLabel id="rating-filter-label">Rating</InputLabel>
+            <Select
+              labelId="rating-filter-label"
+              label="Rating"
+              value={String(ratingFilter)}
+              onChange={handleRatingFilterChange}
             >
-              {errorMessage}
-            </Alert>
-          )}
-
-          {hasSelectedEvent && !loading && !error && !hasItems && (
-            <Typography color="text.secondary">
-              No feedback yet for this event
-              {numericRatingFilter
-                ? ` with a rating of ${String(numericRatingFilter)}`
-                : ''}{' '}
-              — be the first to share your thoughts!
-            </Typography>
-          )}
-
-          {hasSelectedEvent && hasItems && (
-            <Stack spacing={2}>
-              {items.map((feedback) => (
-                <FeedbackStreamItem key={feedback.id} feedback={feedback} />
-              ))}
-            </Stack>
-          )}
-
-          {hasSelectedEvent && nextCursor && (
-            <Box display="flex" justifyContent="center" mt={1}>
-              <Button
-                type="button"
-                variant="outlined"
-                onClick={() => {
-                  void handleLoadMore();
-                }}
-                disabled={isLoadingMore}
-              >
-                {isLoadingMore ? 'Loading more...' : 'Load more'}
-              </Button>
-            </Box>
-          )}
+              <MenuItem value="all">All ratings</MenuItem>
+              <MenuItem value="5">5 stars</MenuItem>
+              <MenuItem value="4">4 stars</MenuItem>
+              <MenuItem value="3">3 stars</MenuItem>
+              <MenuItem value="2">2 stars</MenuItem>
+              <MenuItem value="1">1 star</MenuItem>
+            </Select>
+          </FormControl>
         </Stack>
-      </CardContent>
-    </Card>
+
+        {!hasSelectedEvent && (
+          <Typography color="text.secondary">
+            Select an event to see what others are saying in real time.
+          </Typography>
+        )}
+
+        {hasSelectedEvent && loading && !hasItems && (
+          <Stack spacing={1}>
+            {Array.from({ length: DEFAULT_PAGE_SIZE }, (_, i) => (
+              <Skeleton
+                key={`feedback-skeleton-${String(i)}`}
+                variant="rounded"
+                height={80}
+              />
+            ))}
+          </Stack>
+        )}
+
+        {hasSelectedEvent && hasError && (
+          <Alert
+            severity="error"
+            action={
+              <>
+                <Button
+                  type="button"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    void refetch();
+                  }}
+                >
+                  Retry
+                </Button>
+                <IconButton
+                  size="small"
+                  aria-label="Dismiss error"
+                  color="inherit"
+                  onClick={() => {
+                    setIsErrorDismissed(true);
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </>
+            }
+          >
+            {errorMessage}
+          </Alert>
+        )}
+
+        {hasSelectedEvent && !loading && !error && !hasItems && (
+          <Typography color="text.secondary">
+            No feedback yet for this event
+            {numericRatingFilter
+              ? ` with a rating of ${String(numericRatingFilter)}`
+              : ''}{' '}
+            — be the first to share your thoughts!
+          </Typography>
+        )}
+
+        {hasSelectedEvent && hasItems && (
+          <Stack spacing={2}>
+            {items.map((feedback) => (
+              <FeedbackStreamItem key={feedback.id} feedback={feedback} />
+            ))}
+          </Stack>
+        )}
+
+        {hasSelectedEvent && nextCursor && (
+          <Box display="flex" justifyContent="center" mt={1}>
+            <Button
+              type="button"
+              variant="outlined"
+              onClick={() => {
+                void handleLoadMore();
+              }}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? 'Loading more...' : 'Load more'}
+            </Button>
+          </Box>
+        )}
+      </Stack>
+    </Stack>
   );
 };
