@@ -38,16 +38,13 @@ export const FeedbackStream = () => {
   const prevRatingRef = useRef(rating);
 
   useEffect(() => {
-    const eventChanged = prevEventIdRef.current !== eventId;
-    const switchedToAllRatings =
-      prevRatingRef.current !== ALL_RATINGS_VALUE &&
-      rating === ALL_RATINGS_VALUE;
+    const filterChanged =
+      prevEventIdRef.current !== eventId || prevRatingRef.current !== rating;
 
     prevEventIdRef.current = eventId;
     prevRatingRef.current = rating;
 
-    if (eventChanged || switchedToAllRatings) {
-      console.log('refetching feedback');
+    if (filterChanged) {
       void refetch();
     }
   }, [eventId, rating, refetch]);
