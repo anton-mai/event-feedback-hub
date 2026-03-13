@@ -1,15 +1,13 @@
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Rating } from '../../../../shared/components/Rating';
+import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 import { EventsSelect } from '../../../events/components/EventsSelect';
 import { useSubmitFeedback } from '../../hooks/useSubmitFeedback';
@@ -113,17 +111,7 @@ export const FeedbackForm = () => {
               <Rating
                 name="feedback-rating"
                 value={rating}
-                onChange={(_event, newValue) => {
-                  setRating(newValue ?? null);
-                }}
-                max={5}
-                icon={<FavoriteIcon fontSize="inherit" />}
-                emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
-                sx={{
-                  '& .MuiRating-iconFilled': {
-                    color: '#ff6d75',
-                  },
-                }}
+                onChange={setRating}
               />
             </Box>
 
