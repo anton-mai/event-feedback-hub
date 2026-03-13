@@ -71,6 +71,7 @@ export const FeedbackForm = () => {
       <Typography variant="h6" component="h2" gutterBottom>
         Share your feedback
       </Typography>
+
       <Box component="form" onSubmit={(event) => void handleSubmit(event)}>
         <Stack spacing={1.5}>
           <EventsSelect

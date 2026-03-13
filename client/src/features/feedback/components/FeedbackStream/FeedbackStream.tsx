@@ -2,24 +2,19 @@ import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import type { SelectChangeEvent } from '@mui/material/Select';
-import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
-import {
-  ALL_EVENTS_VALUE,
-  EventsSelect,
-} from '../../../events/components/EventsSelect';
+import { useState } from 'react';
+import { ALL_EVENTS_VALUE } from '../../../events/components/EventsSelect';
 import { useFeedback } from '../../hooks/useFeedback';
+import { FeedbackStreamFilters } from '../FeedbackStreamFilters';
 import { FeedbackStreamItem } from '../FeedbackStreamItem';
 import { DEFAULT_PAGE_SIZE } from './FeedbackStream.constants';
+import { getFeedbackStreamEmptyMessage } from './FeedbackStream.utils';
 
 type TRatingFilter = 'all' | 1 | 2 | 3 | 4 | 5;
 
@@ -49,10 +44,6 @@ export const FeedbackStream = () => {
     const parsedValue = Number.parseInt(value, 10) as TRatingFilter;
     setRatingFilter(parsedValue);
   };
-
-  useEffect(() => {
-    setIsErrorDismissed(false);
-  }, [eventId, ratingFilter]);
 
   const handleLoadMore = async () => {
     if (!nextCursor) {
@@ -87,39 +78,12 @@ export const FeedbackStream = () => {
         {headerTitle}
       </Typography>
       <Stack spacing={1.5}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={2}
-          alignItems={{ sm: 'center' }}
-          component="section"
-          aria-label="Feedback filters"
-        >
-          <Box flex={1}>
-            <EventsSelect
-              label="Event"
-              value={eventId}
-              onChange={setEventId}
-              includeAllEvents
-            />
-          </Box>
-
-          <FormControl sx={{ minWidth: 160 }}>
-            <InputLabel id="rating-filter-label">Rating</InputLabel>
-            <Select
-              labelId="rating-filter-label"
-              label="Rating"
-              value={String(ratingFilter)}
-              onChange={handleRatingFilterChange}
-            >
-              <MenuItem value="all">All ratings</MenuItem>
-              <MenuItem value="5">5 stars</MenuItem>
-              <MenuItem value="4">4 stars</MenuItem>
-              <MenuItem value="3">3 stars</MenuItem>
-              <MenuItem value="2">2 stars</MenuItem>
-              <MenuItem value="1">1 star</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
+        <FeedbackStreamFilters
+          eventId={eventId}
+          onEventIdChange={setEventId}
+          ratingFilterValue={String(ratingFilter)}
+          onRatingFilterChange={handleRatingFilterChange}
+        />
 
         {loading && !hasItems && (
           <Stack spacing={1.5}>
@@ -176,12 +140,7 @@ export const FeedbackStream = () => {
 
         {!loading && !error && !hasItems && (
           <Typography color="text.secondary">
-            No feedback yet
-            {isAllEvents ? '' : ' for this event'}
-            {numericRatingFilter
-              ? ` with a rating of ${String(numericRatingFilter)}`
-              : ''}{' '}
-            — be the first to share your thoughts!
+            {getFeedbackStreamEmptyMessage(isAllEvents, numericRatingFilter)}
           </Typography>
         )}
 

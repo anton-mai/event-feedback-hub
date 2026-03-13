@@ -33,10 +33,11 @@ export const getFeedback = ({
     b.createdAt.localeCompare(a.createdAt),
   );
 
-  const feedbackItemsAfterFilters = getFilteredFeedbackItems(
-    allFeedbackItems,
-    { eventId, rating, cursor },
-  );
+  const feedbackItemsAfterFilters = getFilteredFeedbackItems(allFeedbackItems, {
+    eventId,
+    rating,
+    cursor,
+  });
 
   const pageSize =
     typeof limit === 'number'
