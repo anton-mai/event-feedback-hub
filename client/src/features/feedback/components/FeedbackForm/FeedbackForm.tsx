@@ -1,3 +1,6 @@
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -19,6 +22,7 @@ export const FeedbackForm = () => {
   const [rating, setRating] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+  const [isErrorDismissed, setIsErrorDismissed] = useState(false);
 
   const { submit, loading, error } = useSubmitFeedback();
 
@@ -33,6 +37,7 @@ export const FeedbackForm = () => {
     event.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
+    setIsErrorDismissed(false);
 
     if (!eventId || !displayName || !feedbackText || !rating) {
       setSubmitError('Please fill in all fields and select a rating.');
@@ -58,6 +63,13 @@ export const FeedbackForm = () => {
 
   const remainingCharacters = MAX_FEEDBACK_LENGTH - feedbackText.length;
 
+  const hasError = Boolean(error || submitError) && !isErrorDismissed;
+
+  const errorMessage =
+    error?.message ??
+    submitError ??
+    'Failed to submit feedback. Please try again.';
+
   return (
     <Card component="section" aria-label="Submit feedback form">
       <CardHeader title="Share your feedback" />
@@ -67,6 +79,7 @@ export const FeedbackForm = () => {
             <EventsSelect label="Event" value={eventId} onChange={setEventId} />
 
             <TextField
+              required
               label="Your name"
               value={displayName}
               onChange={(event) => {
@@ -76,6 +89,7 @@ export const FeedbackForm = () => {
             />
 
             <TextField
+              required
               label="Your feedback"
               value={feedbackText}
               onChange={(event) => {
@@ -88,11 +102,14 @@ export const FeedbackForm = () => {
               fullWidth
               multiline
               minRows={3}
-              helperText={`${String(remainingCharacters)} characters remaining`}
+              slotProps={{
+                htmlInput: { maxLength: MAX_FEEDBACK_LENGTH },
+              }}
+              helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
             />
 
             <Box>
-              <Typography component="legend">Rating</Typography>
+              <Typography component="legend">Rating *</Typography>
               <Rating
                 name="feedback-rating"
                 value={rating}
@@ -100,13 +117,25 @@ export const FeedbackForm = () => {
                   setRating(newValue ?? null);
                 }}
                 max={5}
+                icon={<FavoriteIcon fontSize="inherit" />}
+                emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
+                sx={{
+                  '& .MuiRating-iconFilled': {
+                    color: '#ff6d75',
+                  },
+                }}
               />
             </Box>
 
-            {(Boolean(error) || Boolean(submitError)) && (
-              <Typography color="error">
-                {error?.message ?? submitError ?? 'Failed to submit feedback.'}
-              </Typography>
+            {hasError && (
+              <Alert
+                severity="error"
+                onClose={() => {
+                  setIsErrorDismissed(true);
+                }}
+              >
+                {errorMessage}
+              </Alert>
             )}
 
             {submitSuccess && (
@@ -120,7 +149,8 @@ export const FeedbackForm = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={loading || isFormInvalid}
+                disabled={isFormInvalid}
+                loading={loading}
               >
                 {loading ? 'Submitting...' : 'Submit feedback'}
               </Button>

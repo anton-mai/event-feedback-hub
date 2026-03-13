@@ -52,6 +52,7 @@ export type TUseFeedbackResult = {
   loading: boolean;
   error: ErrorLike | undefined;
   loadMore: () => Promise<void>;
+  refetch: () => Promise<unknown>;
 };
 
 type TUseFeedbackArgs = {
@@ -67,9 +68,8 @@ export const useFeedback = ({
 }: TUseFeedbackArgs): TUseFeedbackResult => {
   const shouldSkipQuery = !eventId;
 
-  const { data, loading, error, fetchMore, subscribeToMore } = useQuery(
-    feedbackDocumentNode,
-    {
+  const { data, loading, error, fetchMore, refetch, subscribeToMore } =
+    useQuery(feedbackDocumentNode, {
       variables: {
         eventId,
         rating: rating ?? undefined,
@@ -78,8 +78,7 @@ export const useFeedback = ({
       },
       skip: shouldSkipQuery,
       notifyOnNetworkStatusChange: true,
-    },
-  );
+    });
 
   useEffect(() => {
     if (shouldSkipQuery || !data?.feedback) {
@@ -149,5 +148,6 @@ export const useFeedback = ({
     loading,
     error,
     loadMore,
+    refetch,
   };
 };

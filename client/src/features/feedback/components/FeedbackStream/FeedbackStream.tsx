@@ -1,5 +1,8 @@
+import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,11 +14,11 @@ import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EventsSelect } from '../../../events/components/EventsSelect';
 import { useFeedback } from '../../hooks/useFeedback';
+import { FeedbackStreamItem } from '../FeedbackStreamItem';
 import { DEFAULT_PAGE_SIZE } from './FeedbackStream.constants';
-import { FeedbackStreamItem } from './FeedbackStreamItem';
 
 type TRatingFilter = 'all' | 1 | 2 | 3 | 4 | 5;
 
@@ -24,10 +27,11 @@ export const FeedbackStream = () => {
   const [ratingFilter, setRatingFilter] = useState<TRatingFilter>('all');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+  const [isErrorDismissed, setIsErrorDismissed] = useState(false);
 
   const numericRatingFilter = ratingFilter === 'all' ? null : ratingFilter;
 
-  const { items, nextCursor, loading, error, loadMore } = useFeedback({
+  const { items, nextCursor, loading, error, loadMore, refetch } = useFeedback({
     eventId,
     rating: numericRatingFilter,
     limit: DEFAULT_PAGE_SIZE,
@@ -44,6 +48,10 @@ export const FeedbackStream = () => {
     const parsedValue = Number.parseInt(value, 10) as TRatingFilter;
     setRatingFilter(parsedValue);
   };
+
+  useEffect(() => {
+    setIsErrorDismissed(false);
+  }, [eventId, ratingFilter]);
 
   const handleLoadMore = async () => {
     if (!nextCursor) {
@@ -64,6 +72,11 @@ export const FeedbackStream = () => {
 
   const hasSelectedEvent = Boolean(eventId);
   const hasItems = items.length > 0;
+  const hasError = Boolean(error || loadMoreError) && !isErrorDismissed;
+  const errorMessage =
+    error?.message ??
+    loadMoreError ??
+    'Failed to load feedback. Please try again.';
 
   return (
     <Card component="section" aria-label="Feedback stream">
@@ -115,12 +128,36 @@ export const FeedbackStream = () => {
             </Stack>
           )}
 
-          {hasSelectedEvent && (error || loadMoreError) && (
-            <Typography color="error">
-              {error?.message ??
-                loadMoreError ??
-                'Failed to load feedback. Please try again.'}
-            </Typography>
+          {hasSelectedEvent && hasError && (
+            <Alert
+              severity="error"
+              action={
+                <>
+                  <Button
+                    type="button"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      void refetch();
+                    }}
+                  >
+                    Retry
+                  </Button>
+                  <IconButton
+                    size="small"
+                    aria-label="Dismiss error"
+                    color="inherit"
+                    onClick={() => {
+                      setIsErrorDismissed(true);
+                    }}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </>
+              }
+            >
+              {errorMessage}
+            </Alert>
           )}
 
           {hasSelectedEvent && !loading && !error && !hasItems && (

@@ -1,3 +1,5 @@
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
@@ -5,6 +7,7 @@ import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import type { GetFeedbackQuery } from '../../../../generated/graphql';
+import { feedbackRating } from './FeedbackStreamItem.styles';
 
 type TFeedbackItem = GetFeedbackQuery['feedback']['items'][number];
 
@@ -32,6 +35,9 @@ export const FeedbackStreamItem = ({
           name={`feedback-rating-${id}`}
           value={rating}
           max={5}
+          icon={<FavoriteIcon fontSize="inherit" />}
+          emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
+          sx={feedbackRating}
           readOnly
           size="small"
         />

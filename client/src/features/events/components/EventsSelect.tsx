@@ -1,11 +1,13 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import type { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import { useEvents } from '../hooks/useEvents';
 
 export type TEventsSelectProps = {
@@ -19,7 +21,7 @@ export const EventsSelect = ({
   value,
   onChange,
 }: TEventsSelectProps) => {
-  const { events, loading, error } = useEvents();
+  const { events, loading, error, refetch } = useEvents();
 
   const handleChange = (event: SelectChangeEvent) => {
     onChange(event.target.value);
@@ -35,9 +37,19 @@ export const EventsSelect = ({
 
   if (error) {
     return (
-      <Typography color="error">
-        Failed to load events. Please try again later.
-      </Typography>
+      <Stack spacing={1} direction="row" alignItems="center">
+        <Typography color="error">{error.message}</Typography>
+        <Box>
+          <Button
+            type="button"
+            variant="outlined"
+            size="small"
+            onClick={() => void refetch()}
+          >
+            Retry
+          </Button>
+        </Box>
+      </Stack>
     );
   }
 
@@ -46,7 +58,7 @@ export const EventsSelect = ({
   }
 
   return (
-    <FormControl fullWidth>
+    <FormControl required fullWidth>
       <InputLabel id="events-select-label">{label}</InputLabel>
       <Select
         labelId="events-select-label"
