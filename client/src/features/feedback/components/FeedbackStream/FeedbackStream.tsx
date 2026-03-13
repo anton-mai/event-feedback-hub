@@ -2,11 +2,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -78,15 +78,25 @@ export const FeedbackStream = () => {
     loadMoreError ??
     'Failed to load feedback. Please try again.';
 
+  const headerTitle = hasSelectedEvent
+    ? `Live feedback stream (${String(items.length)})`
+    : 'Live feedback stream';
+
   return (
     <Card component="section" aria-label="Feedback stream">
-      <CardHeader title="Live feedback stream" />
+      <CardHeader title={headerTitle} />
       <CardContent>
         <Stack spacing={2}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ sm: 'center' }}
+            component="section"
+            aria-label="Feedback filters"
+          >
             <Box flex={1}>
               <EventsSelect
-                label="Filter by event"
+                label="Event"
                 value={eventId}
                 onChange={setEventId}
               />

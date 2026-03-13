@@ -14,12 +14,14 @@ export type TEventsSelectProps = {
   label?: string;
   value: string;
   onChange: (eventId: string) => void;
+  required?: boolean;
 };
 
 export const EventsSelect = ({
   label = 'Event',
   value,
   onChange,
+  required = false,
 }: TEventsSelectProps) => {
   const { events, loading, error, refetch } = useEvents();
 
@@ -58,7 +60,7 @@ export const EventsSelect = ({
   }
 
   return (
-    <FormControl required fullWidth>
+    <FormControl required={required} fullWidth>
       <InputLabel id="events-select-label">{label}</InputLabel>
       <Select
         labelId="events-select-label"

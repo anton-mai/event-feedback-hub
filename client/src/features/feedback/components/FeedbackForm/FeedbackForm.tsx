@@ -74,7 +74,12 @@ export const FeedbackForm = () => {
       <CardContent>
         <Box component="form" onSubmit={(event) => void handleSubmit(event)}>
           <Stack spacing={1.5}>
-            <EventsSelect label="Event" value={eventId} onChange={setEventId} />
+            <EventsSelect
+              label="Event"
+              value={eventId}
+              onChange={setEventId}
+              required
+            />
 
             <TextField
               required
