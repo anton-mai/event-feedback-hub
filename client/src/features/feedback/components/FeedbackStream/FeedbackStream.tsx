@@ -8,7 +8,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ALL_EVENTS_VALUE } from '../../../events/components/EventsSelect';
 import { useFeedback } from '../../hooks/useFeedback';
 import { FeedbackStreamFilters } from '../FeedbackStreamFilters';
@@ -33,21 +33,6 @@ export const FeedbackStream = () => {
     rating: numericRating,
     limit: DEFAULT_PAGE_SIZE,
   });
-
-  const prevEventIdRef = useRef(eventId);
-  const prevRatingRef = useRef(rating);
-
-  useEffect(() => {
-    const filterChanged =
-      prevEventIdRef.current !== eventId || prevRatingRef.current !== rating;
-
-    prevEventIdRef.current = eventId;
-    prevRatingRef.current = rating;
-
-    if (filterChanged) {
-      void refetch();
-    }
-  }, [eventId, rating, refetch]);
 
   const handleRatingFilterChange = (event: SelectChangeEvent) => {
     const value = event.target.value;

@@ -78,6 +78,7 @@ export const useFeedback = ({
         limit,
       },
       notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'cache-and-network',
     });
 
   useEffect(() => {
