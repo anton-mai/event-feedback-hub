@@ -22,6 +22,7 @@ await apolloServer.start();
 
 const DEFAULT_PORT = 4000;
 const PORT = Number(process.env.PORT ?? DEFAULT_PORT);
+const GRAPHQL_PATH = process.env.GRAPHQL_PATH ?? '/graphql';
 
 const app = express();
 
@@ -31,13 +32,13 @@ app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.use('/graphql', express.json(), expressMiddleware(apolloServer));
+app.use(GRAPHQL_PATH, express.json(), expressMiddleware(apolloServer));
 
 const httpServer = createServer(app);
 
 const wsServer = new WebSocketServer({
   server: httpServer,
-  path: '/graphql',
+  path: GRAPHQL_PATH,
 });
 
 wsServer.on('error', (error: Error) => {
@@ -48,6 +49,6 @@ useServer({ schema }, wsServer);
 
 httpServer.listen(PORT, () => {
   console.log(
-    `Server ready at http://localhost:${String(PORT)}/graphql (HTTP + WebSocket)`,
+    `Server ready at http://localhost:${String(PORT)}${GRAPHQL_PATH} (HTTP + WebSocket)`,
   );
 });

@@ -9,11 +9,18 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
 import { createClient } from 'graphql-ws';
 import type { FeedbackPage } from '../generated/graphql';
+import { getEnvString } from '../utils';
 
-const HTTP_URI = 'http://localhost:4000/graphql';
-const WS_URL = 'ws://localhost:4000/graphql';
+const HTTP_URL = getEnvString(
+  import.meta.env.VITE_GRAPHQL_HTTP_URL,
+  'http://localhost:4000/graphql',
+);
+const WS_URL = getEnvString(
+  import.meta.env.VITE_GRAPHQL_WS_URL,
+  'ws://localhost:4000/graphql',
+);
 
-const httpLink = new HttpLink({ uri: HTTP_URI });
+const httpLink = new HttpLink({ uri: HTTP_URL });
 
 const wsLink = new GraphQLWsLink(
   createClient({
