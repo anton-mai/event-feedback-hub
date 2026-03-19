@@ -2,8 +2,11 @@ import type { ErrorLike } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { useEffect } from 'react';
 import { ALL_EVENTS_VALUE } from '../../../constants/events';
-import type { DocumentType } from '../../../generated/gql';
 import { graphql } from '../../../generated/gql';
+import type {
+  GetFeedbackQuery,
+  GetFeedbackQueryVariables,
+} from '../../../generated/graphql';
 
 const feedbackDocumentNode = graphql(`
   query GetFeedback($eventId: ID, $rating: Int, $cursor: String, $limit: Int) {
@@ -45,11 +48,9 @@ const feedbackCreatedDocumentNode = graphql(`
   }
 `);
 
-type TGetFeedbackQueryResult = DocumentType<typeof feedbackDocumentNode>;
-
 export type TUseFeedbackResult = {
-  items: TGetFeedbackQueryResult['feedback']['items'];
-  nextCursor: TGetFeedbackQueryResult['feedback']['nextCursor'];
+  items: GetFeedbackQuery['feedback']['items'];
+  nextCursor: GetFeedbackQuery['feedback']['nextCursor'];
   loading: boolean;
   error: ErrorLike | undefined;
   loadMore: () => Promise<void>;
@@ -70,16 +71,19 @@ export const useFeedback = ({
   const isAllEvents = eventId === ALL_EVENTS_VALUE;
 
   const { data, loading, error, fetchMore, refetch, subscribeToMore } =
-    useQuery(feedbackDocumentNode, {
-      variables: {
-        eventId: isAllEvents ? null : eventId,
-        rating: rating ?? undefined,
-        cursor: undefined,
-        limit,
+    useQuery<GetFeedbackQuery, GetFeedbackQueryVariables>(
+      feedbackDocumentNode,
+      {
+        variables: {
+          eventId: isAllEvents ? null : eventId,
+          rating: rating ?? undefined,
+          cursor: undefined,
+          limit,
+        },
+        notifyOnNetworkStatusChange: true,
+        fetchPolicy: 'cache-and-network',
       },
-      notifyOnNetworkStatusChange: true,
-      fetchPolicy: 'cache-and-network',
-    });
+    );
 
   useEffect(() => {
     if (!data?.feedback) {

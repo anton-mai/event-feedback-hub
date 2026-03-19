@@ -1,7 +1,10 @@
 import type { ErrorLike } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import type { DocumentType } from '../../../generated/gql';
 import { graphql } from '../../../generated/gql';
+import type {
+  GetEventsQuery,
+  GetEventsQueryVariables,
+} from '../../../generated/graphql';
 
 const eventsDocumentNode = graphql(`
   query GetEvents {
@@ -12,17 +15,18 @@ const eventsDocumentNode = graphql(`
   }
 `);
 
-type TGetEventsQueryResult = DocumentType<typeof eventsDocumentNode>;
-
 export type TUseEventsResult = {
-  events: TGetEventsQueryResult['events'] | undefined;
+  events: GetEventsQuery['events'] | undefined;
   loading: boolean;
   error: ErrorLike | undefined;
   refetch: () => Promise<unknown>;
 };
 
 export const useEvents = (): TUseEventsResult => {
-  const { data, loading, error, refetch } = useQuery(eventsDocumentNode);
+  const { data, loading, error, refetch } = useQuery<
+    GetEventsQuery,
+    GetEventsQueryVariables
+  >(eventsDocumentNode);
 
   return {
     events: data?.events,

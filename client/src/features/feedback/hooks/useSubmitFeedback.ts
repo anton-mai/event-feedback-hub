@@ -1,7 +1,10 @@
 import type { ErrorLike } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import type { CreateFeedbackInput } from '../../../generated/graphql';
-import type { DocumentType } from '../../../generated/gql';
+import type {
+  CreateFeedbackInput,
+  CreateFeedbackMutation,
+  CreateFeedbackMutationVariables,
+} from '../../../generated/graphql';
 import { graphql } from '../../../generated/gql';
 
 const createFeedbackDocumentNode = graphql(`
@@ -20,20 +23,19 @@ const createFeedbackDocumentNode = graphql(`
   }
 `);
 
-type TCreateFeedbackMutationResult = DocumentType<
-  typeof createFeedbackDocumentNode
->;
-
 export type TUseSubmitFeedbackResult = {
   submit: (
     input: CreateFeedbackInput,
-  ) => Promise<TCreateFeedbackMutationResult | null>;
+  ) => Promise<CreateFeedbackMutation | null>;
   loading: boolean;
   error: ErrorLike | undefined;
 };
 
 export const useSubmitFeedback = (): TUseSubmitFeedbackResult => {
-  const [mutate, { loading, error }] = useMutation(createFeedbackDocumentNode);
+  const [mutate, { loading, error }] = useMutation<
+    CreateFeedbackMutation,
+    CreateFeedbackMutationVariables
+  >(createFeedbackDocumentNode);
 
   const submit = async (input: CreateFeedbackInput) => {
     const result = await mutate({
