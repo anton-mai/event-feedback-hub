@@ -17,6 +17,26 @@
 
 ---
 
+## Environment Variables configuration
+
+The apps support environment variables for the GraphQL endpoint.
+
+For local development, create `.env.local` files by copying the provided examples:
+- `server/.env.local` from `server/.env.example`
+- `client/.env.local` from `client/.env.example`
+
+Note: because the client is built with Vite, `VITE_GRAPHQL_HTTP_URL` and `VITE_GRAPHQL_WS_URL` are read at build time (so set them before running `npm run build -w client`).
+
+### Server (`server/`)
+- `PORT` (default: `4000`)
+- `GRAPHQL_PATH` (default: `/graphql`)
+
+### Client (`client/`)
+- `VITE_GRAPHQL_HTTP_URL` (default: `http://localhost:4000/graphql`)
+- `VITE_GRAPHQL_WS_URL` (default: `ws://localhost:4000/graphql`)
+
+---
+
 ## How to Run Locally
 
 1. **Install dependencies** (from repo root):
@@ -35,24 +55,6 @@
 
    - **Client**: Vite dev server (default: `http://localhost:5173`)
    - **Server**: GraphQL API + WebSocket (default: `http://localhost:4000/graphql`)
-
-## Environment Variables (configuration)
-
-The apps support environment variables for the GraphQL endpoint.
-
-For local development, create `.env.local` files by copying the provided examples:
-- `server/.env.local` from `server/.env.example`
-- `client/.env.local` from `client/.env.example`
-
-Note: because the client is built with Vite, `VITE_GRAPHQL_HTTP_URL` and `VITE_GRAPHQL_WS_URL` are read at build time (so set them before running `npm run build -w client`).
-
-### Server (`server/`)
-- `PORT` (default: `4000`)
-- `GRAPHQL_PATH` (default: `/graphql`)
-
-### Client (`client/`)
-- `VITE_GRAPHQL_HTTP_URL` (default: `http://localhost:4000/graphql`)
-- `VITE_GRAPHQL_WS_URL` (default: `ws://localhost:4000/graphql`)
 
 3. **Optional — run client or server only**:
 
