@@ -8,13 +8,14 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
 import { createClient } from 'graphql-ws';
-import type { FeedbackPage } from '../generated/graphql';
 import { getEnvString } from '../utils';
+import { mergeFeedbackPage } from './client.utils';
 
 const HTTP_URL = getEnvString(
   import.meta.env.VITE_GRAPHQL_HTTP_URL,
   'http://localhost:4000/graphql',
 );
+
 const WS_URL = getEnvString(
   import.meta.env.VITE_GRAPHQL_WS_URL,
   'ws://localhost:4000/graphql',
@@ -47,20 +48,7 @@ const cache = new InMemoryCache({
       fields: {
         feedback: {
           keyArgs: ['eventId', 'rating'],
-          merge(
-            existing: FeedbackPage | undefined,
-            incoming: FeedbackPage,
-            { args },
-          ): FeedbackPage {
-            if (!existing || !args?.cursor) {
-              return incoming;
-            }
-
-            return {
-              ...incoming,
-              items: [...existing.items, ...incoming.items],
-            };
-          },
+          merge: mergeFeedbackPage,
         },
       },
     },
