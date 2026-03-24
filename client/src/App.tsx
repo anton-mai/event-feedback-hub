@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -6,8 +7,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styles } from './App.styles';
 import { FeedbackForm, FeedbackStream } from './features';
+import { useWsStatusMessage } from './ws';
 
 function App() {
+  const { message } = useWsStatusMessage();
+
   return (
     <Box sx={styles.root}>
       <AppBar position="sticky" elevation={1}>
@@ -18,6 +22,11 @@ function App() {
         </Toolbar>
       </AppBar>
       <Container component="main" sx={styles.main} maxWidth="xl">
+        {message && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            {message}
+          </Alert>
+        )}
         <Grid
           container
           spacing={{ xs: 2, md: 4, xl: 6 }}

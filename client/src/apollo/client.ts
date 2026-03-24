@@ -9,6 +9,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
 import { createClient } from 'graphql-ws';
 import { getEnvString } from '../utils';
+import { setWsStatus } from '../ws';
 import { mergeFeedbackPage } from './client.utils';
 
 const HTTP_URL = getEnvString(
@@ -26,6 +27,20 @@ const httpLink = new HttpLink({ uri: HTTP_URL });
 const wsLink = new GraphQLWsLink(
   createClient({
     url: WS_URL,
+    on: {
+      connecting: (isRetry) => {
+        setWsStatus(isRetry ? 'reconnecting' : 'connecting');
+      },
+      connected: () => {
+        setWsStatus('connected');
+      },
+      closed: () => {
+        setWsStatus('disconnected');
+      },
+      error: () => {
+        setWsStatus('disconnected');
+      },
+    },
   }),
 );
 
