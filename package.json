@@ -8,10 +8,18 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "client/**/*.{ts,tsx}": "eslint --fix --config client/eslint.config.js",
+    "server/**/*.ts": "eslint --fix --config server/eslint.config.js",
+    "**/*": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.4.2"
   }
 }

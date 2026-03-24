@@ -118,7 +118,7 @@ Note: because the client is built with Vite, `VITE_GRAPHQL_HTTP_URL` and `VITE_G
 ### Client
 
 - ~~Move API URLs to environment variables for better configurability.~~
-- Add pre-commit hooks (e.g. Husky + lint-staged) to enforce linting before commits.
+- ~~Add pre-commit hooks (e.g. Husky + lint-staged) to enforce linting before commits.~~
 - Use a dedicated form library such as React Hook Form to simplify form state management and validation.
 - ~~Use direct Apollo cache updates after mutations instead of refetching queries.~~
 
