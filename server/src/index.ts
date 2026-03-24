@@ -1,51 +1,32 @@
-import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express4';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import cors from 'cors';
 import express from 'express';
-import fs from 'fs';
-import { useServer } from 'graphql-ws/use/ws';
 import { createServer } from 'http';
-import path from 'path';
-import { WebSocketServer } from 'ws';
-import { resolvers } from './resolvers/index.js';
+import { createExpressApp } from './express/createExpressApp.js';
+import { GRAPHQL_PATH, PORT } from './config/env.js';
+import { createApolloServer } from './apollo/createApolloServer.js';
+import { schema } from './schema/schema.js';
+import { createWsServer } from './ws/createWsServer.js';
 
-const typeDefs = fs.readFileSync(
-  path.join(import.meta.dirname, 'schema', 'schema.graphql'),
-  'utf-8',
-);
-
-const schema = makeExecutableSchema({ typeDefs, resolvers });
-
-const apolloServer = new ApolloServer({ schema });
-await apolloServer.start();
-
-const DEFAULT_PORT = 4000;
-const PORT = Number(process.env.PORT ?? DEFAULT_PORT);
-const GRAPHQL_PATH = process.env.GRAPHQL_PATH ?? '/graphql';
-
-const app = express();
-
-app.use(cors());
-
-app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
-app.use(GRAPHQL_PATH, express.json(), expressMiddleware(apolloServer));
-
+const app = createExpressApp();
 const httpServer = createServer(app);
 
-const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: GRAPHQL_PATH,
+const { serverCleanup } = createWsServer({
+  httpServer,
+  graphqlPath: GRAPHQL_PATH,
+  schema,
 });
 
-wsServer.on('error', (error: Error) => {
-  console.error('[WebSocket] Server error:', error.message);
+const apolloServer = createApolloServer({
+  schema,
+  httpServer,
+  onDrain: async () => {
+    await serverCleanup.dispose();
+  },
 });
 
-useServer({ schema }, wsServer);
+await apolloServer.start();
+
+app.use(GRAPHQL_PATH, express.json(), expressMiddleware(apolloServer));
 
 httpServer.listen(PORT, () => {
   console.log(
