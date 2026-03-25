@@ -28,6 +28,7 @@ vi.mock('../../../events/components/EventsSelect', () => ({
 }));
 
 const mockSubmit = vi.fn();
+const mockReset = vi.fn();
 const useSubmitFeedbackMock = vi.mocked(useSubmitFeedback);
 
 function setupMocks(
@@ -40,6 +41,7 @@ function setupMocks(
     submit: mockSubmit,
     loading: overrides.loading ?? false,
     error: overrides.error,
+    reset: mockReset,
   });
 }
 
@@ -98,7 +100,7 @@ describe('FeedbackForm', () => {
     ).toBeEnabled();
   });
 
-  it('shows validation error when submitting with empty required fields', async () => {
+  it('does not call submit when required fields are empty', () => {
     render(<FeedbackForm />);
 
     const form = screen
@@ -108,9 +110,6 @@ describe('FeedbackForm', () => {
       fireEvent.submit(form);
     }
 
-    expect(
-      await screen.findByText(/please fill in all fields and select a rating/i),
-    ).toBeInTheDocument();
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 
@@ -155,7 +154,7 @@ describe('FeedbackForm', () => {
     expect(screen.getByLabelText(/your feedback/i)).toHaveValue('');
   });
 
-  it('shows error message when submit throws', async () => {
+  it('does not reset form or show success snackbar when submit rejects', async () => {
     mockSubmit.mockRejectedValue(new Error('Network error'));
     const user = userEvent.setup();
     render(<FeedbackForm />);
@@ -167,11 +166,14 @@ describe('FeedbackForm', () => {
     fireEvent.click(stars[4]);
     await user.click(screen.getByRole('button', { name: /submit feedback/i }));
 
+    expect(mockSubmit).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText(/your name/i)).toHaveValue('Jane');
+    expect(screen.getByLabelText(/your feedback/i)).toHaveValue('Great!');
     expect(
-      await screen.findByText(
-        /something went wrong while submitting your feedback/i,
-      ),
-    ).toBeInTheDocument();
+      screen.queryByRole('alert', {
+        name: /thank you! your feedback has been submitted/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows hook error in snackbar when useSubmitFeedback returns error', () => {

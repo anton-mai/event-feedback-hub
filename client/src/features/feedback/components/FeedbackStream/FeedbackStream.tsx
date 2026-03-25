@@ -22,7 +22,6 @@ type TRatingFilter = typeof ALL_RATINGS_VALUE | 1 | 2 | 3 | 4 | 5;
 export const FeedbackStream = () => {
   const [eventId, setEventId] = useState(ALL_EVENTS_VALUE);
   const [rating, setRating] = useState<TRatingFilter>(ALL_RATINGS_VALUE);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const [isErrorDismissed, setIsErrorDismissed] = useState(false);
 
@@ -51,33 +50,29 @@ export const FeedbackStream = () => {
       return;
     }
 
-    setIsLoadingMore(true);
     setLoadMoreError(null);
 
     try {
       await loadMore();
-    } catch {
-      setLoadMoreError('Failed to load more feedback.');
-    } finally {
-      setIsLoadingMore(false);
+    } catch (error) {
+      setIsErrorDismissed(false);
+      setLoadMoreError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to load more feedback.',
+      );
     }
   };
 
   const isAllEvents = eventId === ALL_EVENTS_VALUE;
   const hasItems = items.length > 0;
-  const hasError = Boolean(error || loadMoreError) && !isErrorDismissed;
-  const errorMessage =
-    error?.message ??
-    loadMoreError ??
-    'Failed to load feedback. Please try again.';
-
-  const headerTitle = 'Live feedback stream';
 
   return (
     <Stack component="section" aria-label="Feedback stream" gap={1}>
       <Typography variant="h6" component="h2" gutterBottom>
-        {headerTitle}
+        Live feedback stream
       </Typography>
+
       <Stack spacing={1.5}>
         <FeedbackStreamFilters
           eventId={eventId}
@@ -97,47 +92,6 @@ export const FeedbackStream = () => {
             ))}
           </Stack>
         )}
-
-        <Snackbar
-          open={hasError}
-          autoHideDuration={4000}
-          onClose={() => {
-            setIsErrorDismissed(true);
-          }}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
-          <Alert
-            severity="error"
-            action={
-              <>
-                <Button
-                  type="button"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Retry
-                </Button>
-                <IconButton
-                  size="small"
-                  aria-label="Dismiss error"
-                  color="inherit"
-                  onClick={() => {
-                    setIsErrorDismissed(true);
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </>
-            }
-            variant="filled"
-            sx={{ width: '100%' }}
-          >
-            {errorMessage}
-          </Alert>
-        </Snackbar>
 
         {!loading && !error && !hasItems && (
           <Typography color="text.secondary">
@@ -161,13 +115,79 @@ export const FeedbackStream = () => {
               onClick={() => {
                 void handleLoadMore();
               }}
-              disabled={isLoadingMore}
+              disabled={loading}
             >
-              {isLoadingMore ? 'Loading more...' : 'Load more'}
+              {loading ? 'Loading more...' : 'Load more'}
             </Button>
           </Box>
         )}
       </Stack>
+
+      <Snackbar
+        open={Boolean(error?.message) && !isErrorDismissed}
+        onClose={(_, reason) => {
+          if (reason === 'clickaway') {
+            return;
+          }
+
+          setIsErrorDismissed(true);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transitionDuration={0}
+      >
+        <Alert
+          severity="error"
+          action={
+            <>
+              <Button
+                type="button"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  void refetch();
+                }}
+              >
+                Retry
+              </Button>
+              <IconButton
+                size="small"
+                aria-label="Dismiss error"
+                color="inherit"
+                onClick={() => {
+                  setIsErrorDismissed(true);
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </>
+          }
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {error?.message}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={Boolean(loadMoreError) && !isErrorDismissed}
+        autoHideDuration={4000}
+        onClose={() => {
+          setIsErrorDismissed(true);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transitionDuration={0}
+      >
+        <Alert
+          severity="error"
+          onClose={() => {
+            setIsErrorDismissed(true);
+          }}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {loadMoreError}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };

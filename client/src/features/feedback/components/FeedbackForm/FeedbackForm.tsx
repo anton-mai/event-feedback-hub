@@ -16,11 +16,9 @@ export const FeedbackForm = () => {
   const [displayName, setDisplayName] = useState('');
   const [feedbackText, setFeedbackText] = useState('');
   const [rating, setRating] = useState<number | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
-  const [isErrorDismissed, setIsErrorDismissed] = useState(false);
+  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState<boolean>(false);
 
-  const { submit, loading, error } = useSubmitFeedback();
+  const { submit, loading, error, reset } = useSubmitFeedback();
 
   const resetForm = () => {
     setEventId('');
@@ -31,12 +29,10 @@ export const FeedbackForm = () => {
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitError(null);
-    setSubmitSuccess(false);
-    setIsErrorDismissed(false);
+
+    setIsSubmitSuccessful(false);
 
     if (!eventId || !displayName || !feedbackText || !rating) {
-      setSubmitError('Please fill in all fields and select a rating.');
       return;
     }
 
@@ -48,24 +44,16 @@ export const FeedbackForm = () => {
         rating,
       });
 
-      setSubmitSuccess(true);
+      setIsSubmitSuccessful(true);
       resetForm();
     } catch {
-      setSubmitError('Something went wrong while submitting your feedback.');
+      // No-op: The UI reacts to the 'error' object from the mutation hook
     }
   };
 
   const isFormInvalid = !eventId || !displayName || !feedbackText || !rating;
 
   const remainingCharacters = MAX_FEEDBACK_LENGTH - feedbackText.length;
-
-  const hasError = Boolean(error || submitError) && !isErrorDismissed;
-
-  const errorMessage =
-    error?.message ??
-    submitError ??
-    'Failed to submit feedback. Please try again.';
-
   return (
     <Stack component="section" aria-label="Submit feedback form" gap={1}>
       <Typography variant="h6" component="h2" gutterBottom>
@@ -122,49 +110,6 @@ export const FeedbackForm = () => {
             helperText={`${String(remainingCharacters)} of ${String(MAX_FEEDBACK_LENGTH)} characters remaining`}
           />
 
-          <Snackbar
-            open={hasError}
-            autoHideDuration={4000}
-            onClose={() => {
-              setIsErrorDismissed(true);
-            }}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <Alert
-              severity="error"
-              onClose={() => {
-                setIsErrorDismissed(true);
-              }}
-              variant="filled"
-              sx={{ width: '100%' }}
-            >
-              {errorMessage}
-            </Alert>
-          </Snackbar>
-
-          <Snackbar
-            open={submitSuccess}
-            autoHideDuration={4000}
-            onClose={(_event, reason) => {
-              if (reason === 'clickaway') {
-                return;
-              }
-              setSubmitSuccess(false);
-            }}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <Alert
-              severity="success"
-              onClose={() => {
-                setSubmitSuccess(false);
-              }}
-              variant="filled"
-              sx={{ width: '100%' }}
-            >
-              Thank you! Your feedback has been submitted.
-            </Alert>
-          </Snackbar>
-
           <Box display="flex" justifyContent="flex-end">
             <Button
               type="submit"
@@ -178,6 +123,44 @@ export const FeedbackForm = () => {
           </Box>
         </Stack>
       </Box>
+
+      <Snackbar
+        open={Boolean(error?.message)}
+        autoHideDuration={4000}
+        onClose={reset}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transitionDuration={0}
+      >
+        <Alert
+          severity="error"
+          onClose={reset}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {error?.message}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={isSubmitSuccessful}
+        autoHideDuration={4000}
+        onClose={() => {
+          setIsSubmitSuccessful(false);
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transitionDuration={0}
+      >
+        <Alert
+          severity="success"
+          onClose={() => {
+            setIsSubmitSuccessful(false);
+          }}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Thank you! Your feedback has been submitted.
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };
